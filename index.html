@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musa Javed — Aspiring Data Scientist | Interactive Portfolio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0A0C10;
+            --bg-card: rgba(18, 22, 30, 0.75);
+            --bg-card-hover: rgba(26, 32, 44, 0.85);
+            --text-primary: #F5F7FA;
+            --text-secondary: #8E9AAF;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --border-highlight: rgba(198, 255, 0, 0.5);
+            --accent-lime: #C6FF00;
+            --accent-cyan: #00F0FF;
+            --glass-glow: rgba(0, 240, 255, 0.15);
+            
+            --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+
+            --grid-gap: 24px;
+            --nav-height: 80px;
+            --container-padding: 40px;
+            --ease-swiss: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            background-color: var(--bg-primary);
+        }
+
+        ::selection {
+            background-color: var(--accent-lime);
+            color: #0A0C10;
+        }
+
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.4s var(--ease-swiss), transform 0.4s var(--ease-swiss), box-shadow 0.4s var(--ease-swiss);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--border-highlight);
+            box-shadow: 0 20px 50px rgba(0, 240, 255, 0.1);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 var(--container-padding);
+        }
+
+        .grid-12 {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        section {
+            padding: 120px 0;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+            grid-column: span 12;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-label::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-lime);
+            box-shadow: 0 0 10px var(--accent-lime);
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            color: var(--text-primary);
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: rgba(10, 12, 16, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .brand-logo {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo span {
+            color: var(--accent-lime);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-cyan);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-lime);
+            box-shadow: 0 0 8px var(--accent-lime);
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 24px;
+            height: 18px;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: var(--text-primary);
+            transition: all 0.3s ease;
+            position: absolute;
+        }
+
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 8px; }
+        .hamburger span:nth-child(3) { top: 16px; }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            padding-top: calc(var(--nav-height) + 60px);
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-title {
+            font-size: clamp(3.8rem, 10vw, 9rem);
+            line-height: 0.88;
+            letter-spacing: -0.04em;
+            margin-bottom: 40px;
+            grid-column: span 12;
+        }
+
+        .hero-title .glow-cyan {
+            color: var(--text-primary);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .hero-title .glow-lime {
+            color: var(--accent-lime);
+            text-shadow: 0 0 25px rgba(198, 255, 0, 0.4);
+        }
+
+        .hero-subtitle-box {
+            grid-column: span 7;
+            padding: 40px;
+            border-radius: 8px;
+        }
+
+        .hero-role {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-role-badge {
+            background-color: var(--accent-lime);
+            color: #0A0C10;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            border-radius: 2px;
+        }
+
+        .hero-intro {
+            font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .hero-meta {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 40px;
+            border-left: 2px solid var(--accent-cyan);
+            padding-left: 16px;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: all 0.3s var(--ease-swiss);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            gap: 10px;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-lime);
+            color: #0A0C10;
+            font-weight: 600;
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 20px rgba(198, 255, 0, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: #d4ff33;
+            box-shadow: 0 0 30px rgba(198, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .hero-image-column {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+        }
+
+        .hero-3d-card {
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+        }
+
+        .hero-avatar-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--accent-lime);
+            box-shadow: 0 0 20px rgba(198, 255, 0, 0.3);
+            margin-bottom: 20px;
+            transform: translateZ(30px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hero-avatar-container:hover {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+            background: var(--accent-cyan);
+        }
+
+        .hero-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--bg-primary);
+            background-color: var(--bg-card);
+        }
+
+        .social-dock {
+            position: fixed;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 100;
+            padding: 14px 10px;
+            border-radius: 40px;
+            background: rgba(10, 12, 16, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .social-dock-item {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            font-size: 1.25rem;
+            transition: all 0.3s var(--ease-swiss);
+            position: relative;
+        }
+
+        .social-dock-item:hover {
+            transform: scale(1.15) translateX(4px);
+            border-color: var(--accent-lime);
+            color: #0A0C10;
+            box-shadow: 0 0 20px var(--accent-lime);
+        }
+
+        .social-dock-item.linkedin:hover { background-color: #0077b5; color: #fff; border-color: #0077b5; box-shadow: 0 0 20px rgba(0, 119, 181, 0.6); }
+        .social-dock-item.github:hover { background-color: #2ea44f; color: #fff; border-color: #2ea44f; box-shadow: 0 0 20px rgba(46, 164, 79, 0.6); }
+        .social-dock-item.whatsapp:hover { background-color: #25D366; color: #fff; border-color: #25D366; box-shadow: 0 0 20px rgba(37, 211, 102, 0.6); }
+        .social-dock-item.gmail:hover { background-color: #EA4335; color: #fff; border-color: #EA4335; box-shadow: 0 0 20px rgba(234, 67, 53, 0.6); }
+
+        .social-tooltip {
+            position: absolute;
+            left: 60px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(-10px);
+        }
+
+        .social-dock-item:hover .social-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .contact-social-grid {
+            display: flex;
+            gap: 14px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-lime);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s var(--ease-swiss);
+        }
+
+        .toast-notification.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-subtitle-box { grid-column: span 12; }
+            .hero-image-column { grid-column: span 12; margin-top: 30px; }
+        }
+
+        @media (max-width: 768px) {
+            :root { --container-padding: 20px; }
+            .nav-links {
+                position: fixed;
+                top: var(--nav-height);
+                left: 0;
+                width: 100%;
+                height: calc(100vh - var(--nav-height));
+                background-color: var(--bg-primary);
+                flex-direction: column;
+                padding: 40px;
+                transform: translateX(100%);
+                transition: transform 0.4s var(--ease-swiss);
+            }
+            .nav-links.active { transform: translateX(0); }
+            .hamburger { display: block; }
+            .social-dock {
+                left: 50%;
+                top: auto;
+                bottom: 20px;
+                transform: translateX(-50%);
+                flex-direction: row;
+                border-radius: 30px;
+                padding: 10px 16px;
+            }
+            .social-dock-item:hover {
+                transform: scale(1.15) translateY(-4px);
+            }
+            .social-tooltip { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="webgl-bg"></canvas>
+
+    <!-- Floating Social Dock Bar -->
+    <div class="social-dock">
+        <a href="https://www.linkedin.com/in/musa-javed-344654318/" target="_blank" rel="noopener" class="social-dock-item linkedin" aria-label="LinkedIn Profile">
+            <i class="fab fa-linkedin-in"></i>
+            <span class="social-tooltip">LinkedIn Profile</span>
+        </a>
+        <a href="https://github.com/musa-javed" target="_blank" rel="noopener" class="social-dock-item github" aria-label="GitHub Repositories">
+            <i class="fab fa-github"></i>
+            <span class="social-tooltip">GitHub Repositories</span>
+        </a>
+        <a href="https://wa.me/?text=Hello%20Musa,%20I%20saw%20your%203D%20Portfolio!" target="_blank" rel="noopener" class="social-dock-item whatsapp" aria-label="WhatsApp Contact">
+            <i class="fab fa-whatsapp"></i>
+            <span class="social-tooltip">Connect on WhatsApp</span>
+        </a>
+        <a href="mailto:musajaved105@gmail.com" class="social-dock-item gmail" aria-label="Send Email">
+            <i class="fas fa-envelope"></i>
+            <span class="social-tooltip">Direct Gmail</span>
+        </a>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="brand-logo">MUSA JAVED</span></a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#journey" class="nav-link">Journey</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="grid-12">
+                <h1 class="hero-title">
+                    <span class="glow-cyan">MUSA</span><br>
+                    <span class="glow-lime">JAVED.</span>
+                </h1>
+                
+                <div class="hero-subtitle-box glass-panel tilt-card">
+                    <div class="hero-role">
+                        <span>ASPIRING DATA SCIENTIST</span>
+                        <span class="hero-role-badge">BS DATA SCIENCE STUDENT</span>
+                    </div>
+                    <p class="hero-intro">
+                        "Curiosity drives learning. Data creates possibilities." Transforming complex data streams into structural insights through algorithmic precision.
+                    </p>
+                    <div class="hero-meta">
+                        <div><i class="fas fa-location-dot" style="color: var(--accent-lime);"></i> LOCATION: <strong style="color: var(--text-primary);">Muzaffarabad, Azad Kashmir, Pakistan</strong></div>
+                        <div><i class="fas fa-university" style="color: var(--accent-cyan);"></i> INSTITUTION: <strong style="color: var(--text-primary);">Pak-Austria Fachhochschule (PAF-IAST)</strong></div>
+                    </div>
+                    <div class="hero-cta-group">
+                        <a href="#projects" class="btn btn-primary"><i class="fas fa-cube"></i> Explore Projects</a>
+                        <a href="https://github.com/musa-javed" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fab fa-github"></i> GitHub</a>
+                        <a href="https://www.linkedin.com/in/musa-javed-344654318/" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+                    </div>
+                </div>
+
+                <!-- Hero Image Column with Your Attached Headshot Embedded -->
+                <div class="hero-image-column">
+                    <div class="hero-3d-card glass-panel tilt-card">
+                        <div class="hero-avatar-container">
+                            <img src="Professional Studio Headshot.png" alt="Musa Javed Profile" class="hero-avatar-img" onerror="this.onerror=null; this.src='https://placehold.co/400x400/0A0C10/C6FF00?text=MJ';">
+                        </div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 4px; color: var(--text-primary); letter-spacing: 0.05em;">MUSA JAVED</h3>
+                        <p class="mono" style="color: var(--accent-lime); font-size: 0.75rem;">BS DATA SCIENCE</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="grid-12">
+                <div class="section-header">
+                    <div class="section-label">01 / ABOUT ME</div>
+                    <h2 class="section-title">A LITTLE ABOUT MY JOURNEY.</h2>
+                </div>
+
+                <div class="glass-panel tilt-card reveal-on-scroll" style="grid-column: span 12; padding: 40px;">
+                    <p class="about-text" style="font-size: 1.2rem; margin-bottom: 20px;">
+                        I am an ambitious aspiring Data Scientist currently pursuing my Bachelor of Science in Data Science at the Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology (PAF-IAST).
+                    </p>
+                    <p class="about-text" style="font-size: 1.1rem; color: var(--text-secondary);">
+                        My direction is driven by structured problem-solving, algorithm logic, and data entry precision. By combining foundational data structures and algorithm analysis in C++ with modern Python workflows and AI web applications, I aim to convert raw data into actionable intelligence.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="container">
+            <div class="grid-12">
+                <div class="section-header">
+                    <div class="section-label">02 / WHAT I WORK WITH</div>
+                    <h2 class="section-title">VERIFIED EXPERTISE.</h2>
+                </div>
+
+                <div style="grid-column: span 12; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px;">
+                    <div class="skill-card glass-panel tilt-card" style="padding: 30px;">
+                        <span class="skill-number">01 / DATA ANALYTICS</span>
+                        <h3 class="skill-title" style="margin: 10px 0;">DATA ANALYSIS & ENTRY</h3>
+                        <p class="skill-desc">Extracting insights, parsing datasets, structuring raw info, and maintaining data integrity in MS Word and Anaconda environments.</p>
+                    </div>
+                    <div class="skill-card glass-panel tilt-card" style="padding: 30px;">
+                        <span class="skill-number">02 / PROGRAMMING</span>
+                        <h3 class="skill-title" style="margin: 10px 0;">C++ & PYTHON</h3>
+                        <p class="skill-desc">Object-oriented programming (OOP), Data Structures & Algorithms (DSA), time/space complexity analysis, and Python scripting.</p>
+                    </div>
+                    <div class="skill-card glass-panel tilt-card" style="padding: 30px;">
+                        <span class="skill-number">03 / WEB DEVELOPMENT</span>
+                        <h3 class="skill-title" style="margin: 10px 0;">HTML5 & CSS3</h3>
+                        <p class="skill-desc">Crafting responsive front-end layouts, cyber-minimalist interfaces, and interactive WebGL elements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="container">
+            <div class="grid-12">
+                <div class="section-header">
+                    <div class="section-label">03 / SELECTED WORK</div>
+                    <h2 class="section-title">PROJECT ARCHITECTURE.</h2>
+                </div>
+
+                <div style="grid-column: span 12; display: flex; flex-direction: column; gap: 30px;">
+                    <div class="glass-panel tilt-card" style="padding: 40px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: center;">
+                        <div>
+                            <span class="mono" style="color: var(--accent-cyan);">PROJECT 01 — AI & WEB</span>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">LIBAAS STUDIO</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                                An innovative AI-based project integrating modern web development front-end interfaces (HTML, CSS) with intelligent styling algorithms. Designed to demonstrate smart digital concepts for automated fashion recommendations.
+                            </p>
+                            <a href="https://github.com/musa-javed" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fab fa-github"></i> Repository</a>
+                        </div>
+                        <div style="text-align: center; background: rgba(0,240,255,0.05); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <i class="fas fa-brain" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 10px;"></i>
+                            <div style="font-family: var(--font-mono); color: var(--accent-lime);">AI SYSTEM</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel tilt-card" style="padding: 40px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: center;">
+                        <div>
+                            <span class="mono" style="color: var(--accent-cyan);">PROJECT 02 — ACADEMIC LAB</span>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">DSA & ALGORITHM LAB SUITE</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                                Custom data structure implementations and algorithm complexity benchmarks developed in C++. Demonstrates deep object-oriented principles, efficient sorting, and low-level memory allocation optimization.
+                            </p>
+                            <a href="https://github.com/musa-javed" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fab fa-github"></i> C++ Source Code</a>
+                        </div>
+                        <div style="text-align: center; background: rgba(198,255,0,0.05); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <i class="fas fa-code-branch" style="font-size: 3rem; color: var(--accent-lime); margin-bottom: 10px;"></i>
+                            <div style="font-family: var(--font-mono); color: var(--accent-lime);">C++ SUITE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journey Section -->
+    <section id="journey">
+        <div class="container">
+            <div class="grid-12">
+                <div class="section-header">
+                    <div class="section-label">04 / THE JOURNEY & EDUCATION</div>
+                    <h2 class="section-title">ACADEMIC TRAJECTORY.</h2>
+                </div>
+
+                <div style="grid-column: span 12;" class="glass-panel tilt-card" style="padding: 40px;">
+                    <div style="margin-bottom: 30px;">
+                        <span class="mono" style="color: var(--accent-lime);">FEB 2025 – JUN 2029</span>
+                        <h3 style="font-size: 1.5rem; margin: 5px 0;">BS Data Science</h3>
+                        <p style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 10px;">Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology</p>
+                        <p style="color: var(--text-secondary);">Pursuing undergraduate degree with rigorous coursework in statistics, algorithms, and computational modeling.</p>
+                    </div>
+                    <div>
+                        <span class="mono" style="color: var(--accent-lime);">ONLINE CERTIFICATION</span>
+                        <h3 style="font-size: 1.5rem; margin: 5px 0;">Introduction to Data Science</h3>
+                        <p style="color: var(--text-secondary);">Completed specialized introductory training covering exploratory data analysis, dataset management, and python analytics libraries.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" style="border-bottom: none;">
+        <div class="container">
+            <div class="grid-12">
+                <div class="glass-panel" style="grid-column: span 12; padding: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div>
+                        <div class="section-label">05 / LET'S CONNECT</div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">INITIATE CONNECTION.</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                            Open to academic research collaborations, internships, and technical discussions in Data Science and AI.
+                        </p>
+                        <div style="font-family: var(--font-mono); display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                            <div>EMAIL: <a href="mailto:musajaved105@gmail.com" style="color: var(--accent-cyan); text-decoration: none;">musajaved105@gmail.com</a></div>
+                            <div>LOCATION: <span style="color: var(--text-primary);">Muzaffarabad, Azad Kashmir, Pakistan</span></div>
+                            <div>LINKEDIN: <a href="https://www.linkedin.com/in/musa-javed-344654318/" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: none;">musa-javed-344654318</a></div>
+                            <div>GITHUB: <a href="https://github.com/musa-javed" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: none;">musajaved105</a></div>
+                        </div>
+
+                        <div class="contact-social-grid">
+                            <a href="https://www.linkedin.com/in/musa javed/" target="_blank" rel="noopener" class="social-dock-item linkedin" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://github.com/musa-javed" target="_blank" rel="noopener" class="social-dock-item github" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://wa.me/+923298699677?text=Hello%20Musa,%20I%20saw%20your%20portfolio!" target="_blank" rel="noopener" class="social-dock-item whatsapp" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                           <a href="https://mail.google.com/mail/?view=cm&fs=1&to=musajaved105@gmail.com" target="_blank" rel="noopener" class="social-dock-item gmail" title="Gmail">
+                               <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <form id="contactForm" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">Your Name</label>
+                            <input type="text" id="name" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 14px; color: #fff; border-radius: 4px; outline: none;" required placeholder="e.g. John Doe">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">Your Email</label>
+                            <input type="email" id="email" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 14px; color: #fff; border-radius: 4px; outline: none;" required placeholder="name@domain.com">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">Message</label>
+                            <textarea id="message" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 14px; color: #fff; border-radius: 4px; outline: none; min-height: 120px;" required placeholder="Write your message here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="toastNotification" class="toast-notification">
+        <i class="fas fa-check-circle" style="color: var(--accent-lime);"></i> Signal Received! Message sent successfully.
+    </div>
+
+    <footer style="padding: 40px 0; border-top: 1px solid var(--border-color); background: var(--bg-primary);">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-family: var(--font-heading); font-weight: 700;">MUSA JAVED</div>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">Copyright 2026 Mousa Javed. Code Passionate<span></span></div>
+        </div>
+    </footer>
+
+    <!-- Three.js 3D Background & Animation Script -->
+    <script>
+        let scene, camera, renderer;
+        let particlesMesh, cubeGroup, terrainGrid;
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+
+        function init3D() {
+            const canvas = document.getElementById('webgl-bg');
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particleCount = 700;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const colorLime = new THREE.Color(0xC6FF00);
+            const colorCyan = new THREE.Color(0x00F0FF);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 80;
+                positions[i + 1] = (Math.random() - 0.5) * 80;
+                positions[i + 2] = (Math.random() - 0.5) * 80;
+
+                const mixedColor = Math.random() > 0.5 ? colorLime : colorCyan;
+                colors[i] = mixedColor.r;
+                colors[i + 1] = mixedColor.g;
+                colors[i + 2] = mixedColor.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.35,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            particlesMesh = new THREE.Points(geometry, material);
+            scene.add(particlesMesh);
+
+            cubeGroup = new THREE.Group();
+            const boxGeo = new THREE.BoxGeometry(2, 2, 2);
+            const wireMat = new THREE.MeshBasicMaterial({
+                color: 0x00F0FF,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.25
+            });
+
+            for (let i = 0; i < 15; i++) {
+                const cube = new THREE.Mesh(boxGeo, wireMat);
+                cube.position.set(
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 40
+                );
+                cube.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                const scale = Math.random() * 1.5 + 0.5;
+                cube.scale.set(scale, scale, scale);
+                cubeGroup.add(cube);
+            }
+            scene.add(cubeGroup);
+
+            const gridGeo = new THREE.PlaneGeometry(120, 120, 30, 30);
+            const gridMat = new THREE.MeshBasicMaterial({
+                color: 0x1A222C,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.4
+            });
+            terrainGrid = new THREE.Mesh(gridGeo, gridMat);
+            terrainGrid.rotation.x = -Math.PI / 2;
+            terrainGrid.position.y = -25;
+            scene.add(terrainGrid);
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('scroll', onScroll);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(e) {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+        }
+
+        function onScroll() {
+            const scrollY = window.scrollY;
+            camera.position.y = -scrollY * 0.01;
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.0005;
+
+            particlesMesh.rotation.y += (targetX - particlesMesh.rotation.y) * 0.05;
+            particlesMesh.rotation.x += (targetY - particlesMesh.rotation.x) * 0.05;
+
+            cubeGroup.children.forEach((c, idx) => {
+                c.rotation.x += 0.005 * (idx % 2 === 0 ? 1 : -1);
+                c.rotation.y += 0.005;
+            });
+
+            terrainGrid.rotation.z += 0.0005;
+
+            renderer.render(scene, camera);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init3D();
+            animate3D();
+
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+
+            const links = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    if (window.pageYOffset >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                links.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            const tiltCards = document.querySelectorAll('.tilt-card');
+            tiltCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (centerY - y) / 12;
+                    const rotateY = (x - centerX) / 12;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                });
+            });
+
+            const contactForm = document.getElementById('contactForm');
+            const toast = document.getElementById('toastNotification');
+
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                toast.classList.add('active');
+                contactForm.reset();
+                setTimeout(() => {
+                    toast.classList.remove('active');
+                }, 4000);
+            });
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                revealObserver.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
